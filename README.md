@@ -1,2 +1,2 @@
-![Zivi Disconnect](Logo/Light.png)
+![Zivi DisConnect](Logo/Light.png)
 Eine bessere User Experience für ZiviConnect 
