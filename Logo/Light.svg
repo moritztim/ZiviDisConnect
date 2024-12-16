@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   version="1.1"
+   id="Logo"
+   x="0px"
+   y="0px"
+   width="282.68982"
+   height="36.718262"
+   viewBox="8.512 0 282.68982 36.718262"
+   enable-background="new 8.512 0 155.99 38.347"
+   xml:space="preserve"
+   sodipodi:docname="Logo Light.svg"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   inkscape:export-filename="Logo Dark.png"
+   inkscape:export-xdpi="512"
+   inkscape:export-ydpi="512"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs92" /><sodipodi:namedview
+   id="namedview92"
+   pagecolor="#505050"
+   bordercolor="#eeeeee"
+   borderopacity="1"
+   inkscape:showpageshadow="0"
+   inkscape:pageopacity="0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#505050"
+   inkscape:zoom="4.5031689"
+   inkscape:cx="141.34491"
+   inkscape:cy="-17.765268"
+   inkscape:window-width="1920"
+   inkscape:window-height="1011"
+   inkscape:window-x="0"
+   inkscape:window-y="0"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="g92" />
+<g
+   id="g92"
+   transform="translate(14.940812,77.240635)">
+	
+	<path
+   fill="#e306c9"
+   d="m 41.875157,-74.647099 c 0,0 -5.921479,-2.592978 -15.833876,-2.592978 h -0.0031 c -9.913889,0.0014 -15.835367,2.592978 -15.835367,2.592978 0,0 -0.5296364,11.48191 1.717213,17.974797 3.970031,11.414772 14.116662,14.623918 14.116662,14.623918 h 0.0031 0.0031 c 0,0 10.145138,-3.206161 14.11666,-14.623918 2.24685,-6.491396 1.715724,-17.974797 1.715724,-17.974797 z"
+   id="path92"
+   style="stroke-width:1.49193" />
+	<polygon
+   fill="#ffffff"
+   points="21.27,17.561 17.03,17.561 17.03,12.612 12.083,12.612 12.083,8.373 17.03,8.373 17.03,3.426 21.269,3.426 21.27,8.373 26.217,8.373 26.217,12.612 21.27,12.612 "
+   id="polygon92"
+   transform="matrix(1.491932,0,0,1.491932,-2.5515965,-77.238585)" />
+<text
+   xml:space="preserve"
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:28.7318px;font-family:FrutigerNeueW02-Light;-inkscape-font-specification:'FrutigerNeueW02-Light Bold';text-align:start;letter-spacing:-0.1px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#cad6e2;stroke-width:1.95898;stroke-linecap:round;stroke-dasharray:0.0195898, 2.35079;fill-opacity:1"
+   x="76.873436"
+   y="-48.954666"
+   id="text92"><tspan
+     sodipodi:role="line"
+     id="tspan92"
+     x="76.873436"
+     y="-48.954666"
+     style="font-size:28.7318px;letter-spacing:-0.1px;stroke-width:1.95898;fill:#cad6e2;fill-opacity:1">ZiviDisconnect</tspan></text></g>
+<path
+   style="opacity:1;fill:none;fill-opacity:1;stroke:#dfe4e9;stroke-width:1.1;stroke-linecap:butt;stroke-dasharray:none;stroke-opacity:1"
+   d="M 74.034991,5.5843095e-4 73.997711,36.717703"
+   id="path93" /></svg>
