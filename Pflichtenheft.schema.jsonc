@@ -1,0 +1,238 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"title": "Zivildiensteinsatz Pflichtenheft",
+	"description": "Schema für ein Pflichtenheft eines Zivildiensteinsatzes",
+	"required": [
+		"id",
+		"name",
+		"pflichtenheftNummer",
+		"eibName",
+		"eibNummer",
+		"eibAdresse"
+	],
+	"properties": {
+		"id": {
+			"type": "integer",
+			"description": "Eindeutige ID des Pflichtenhefts"
+		},
+		"name": {
+			"type": "string",
+			"description": "kurzbeschreibung der Haupttätigkeit"
+		},
+		"pflichtenheftNummer": {
+			"type": "integer"
+		},
+		"eibName": {
+			"type": "string",
+			"description": "Name des Einsatzbetriebs"
+		},
+		"eibNummer": {
+			"type": "integer",
+			"description": "Nummer des Einsatzbetriebs"
+		},
+		"eibAdresse": {
+			"type": "object",
+			"description": "Adresse des Einsatzbetriebs",
+			"required": ["id", "strasse", "plz", "ort", "kanton", "land"],
+			"properties": {
+				"id": {
+					"type": "integer"
+				},
+				"strasse": {
+					"type": "string"
+				},
+				"strassennummer": {
+					"type": ["string", "null"]
+				},
+				"adresszusatz": {
+					"type": ["string", "null"]
+				},
+				"postfach": {
+					"type": ["string", "null"]
+				},
+				"plz": {
+					"type": "string"
+				},
+				"ort": {
+					"type": "string"
+				},
+				"kanton": {
+					"type": "object",
+					"description": "Kantonsinformationen",
+					"required": ["id", "code", "textDe", "textFr", "textIt"],
+					"properties": {
+						"id": {
+							"type": "integer"
+						},
+						"version": {
+							"type": "integer"
+						},
+						"domain": {
+							"type": "string"
+						},
+						"code": {
+							"type": "string"
+						},
+						"textDe": {
+							"type": "string"
+						},
+						"textFr": {
+							"type": "string"
+						},
+						"textIt": {
+							"type": "string"
+						},
+						"sort": {
+							"type": "integer"
+						}
+					}
+				},
+				"land": {
+					"type": "object",
+					"description": "Landesinformationen",
+					"properties": {
+						"id": {
+							"type": "integer"
+						},
+						"version": {
+							"type": "integer"
+						},
+						"domain": {
+							"type": "string"
+						},
+						"code": {
+							"type": "string"
+						},
+						"textDe": {
+							"type": "string"
+						},
+						"textFr": {
+							"type": "string"
+						},
+						"textIt": {
+							"type": "string"
+						},
+						"sort": {
+							"type": "integer"
+						}
+					}
+				}
+			}
+		},
+		"eibBetriebsbeschreibung": {
+			"type": "string",
+			"description": "Beschreibung des Einsatzbetriebs"
+		},
+		"einsatzArbeitsort": {
+			"type":  "string",
+			"description": "Arbeitsort des Einsatzes"
+		},
+		"taetigkeitList": {
+			"type": "array",
+			"description": "Liste der Tätigkeiten",
+			"items": {
+				"type": "object",
+				"required": ["id", "beschreibung", "kurzbeschreibung", "prozentualerAnteil"],
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"beschreibung": {
+						"type": "string"
+					},
+					"kurzbeschreibung": {
+						"type": "string"
+					},
+					"prozentualerAnteil": {
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 100
+					}
+				}
+			}
+		},
+		"mindestdauerEinsatzInWochen": {
+			"type": "integer",
+			"description": "Minimale Einsatzdauer in Wochen"
+		},
+		"wochenarbeitszeitInStunden": {
+			"type": "integer",
+			"description": "Wöchentliche Arbeitszeit in Stunden"
+		},
+		"arbeitszeitmodell": {
+			"type": "object",
+			"description": "Arbeitszeitmodell-Informationen"
+		},
+		"wochenendarbeit": {
+			"type": "object",
+			"description": "Informationen zur Wochenendarbeit"
+		},
+		"nachtarbeit": {
+			"type": "object",
+			"description": "Informationen zur Nachtarbeit"
+		},
+		"abklaerungLeumundErforderlich": {
+			"type": "boolean",
+			"description": "Gibt an, ob eine Leumundsprüfung erforderlich ist"
+		},
+		"unterkunftAngeboten": {
+			"type": "object",
+			"description": "Informationen zum Unterkunftsangebot"
+		},
+		"verpflegungAngeboten": {
+			"type": "object",
+			"description": "Informationen zum Verpflegungsangebot"
+		},
+		"kursZiviList": {
+			"type": "array",
+			"description": "Liste der erforderlichen Zivildienst-Kurse",
+			"items": {
+				"type": "object"
+			}
+		},
+		"vorausgesetzteGrundkenntnisse": {
+			"type": ["string", "null"],
+			"description": "Erforderliche Grundkenntnisse"
+		},
+		"erwuenschteGrundkenntnisse": {
+			"type": ["string", "null"],
+			"description": "Gewünschte Grundkenntnisse"
+		},
+		"auflagenZdp": {
+			"type": ["string", "null"],
+			"description": "Zusätzliche Auflagen"
+		},
+		"kontaktPersonName": {
+			"type": ["string", "null"],
+			"description": "Name der Kontaktperson"
+		},
+		"kontaktPersonVorname": {
+			"type": ["string", "null"],
+			"description": "Vorname der Kontaktperson"
+		},
+		"kontaktPersonFunktion": {
+			"type": ["string", "null"],
+			"description": "Funktion der Kontaktperson"
+		},
+		"kontaktPersonTelefon1": {
+			"type": ["string", "null"],
+			"description": "Haupttelefonnummer der Kontaktperson"
+		},
+		"kontaktPersonTelefon2": {
+			"type": ["string", "null"],
+			"description": "Alternative Telefonnummer der Kontaktperson"
+		},
+		"kontaktPersonEmail": {
+			"type": ["string", "null"],
+			"description": "E-Mail-Adresse der Kontaktperson"
+		},
+		"schwerpunktprogramm": {
+			"type": "boolean",
+			"description": "Gibt an, ob es sich um ein Schwerpunktprogramm handelt"
+		}
+	}
+}
+
+// This JSON Schema was entirely created by a generative AI.
+// https://declare-ai.org/1.0.0/total.html 
