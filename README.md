@@ -32,6 +32,7 @@ Die Nutzeroberfläche des offiziellen Portals des Schweizer Zivieldienst "ZiviCo
 8. Das Resultat in der [Excel Tabelle](Einsatzsuche.xlsx) im Arbeitsblatt `Suchresultate` einfügen
 
 9. Möglicherweise muss der Import der Daten konfiguriert werden. Hierbei als Trennzeichen das Komma `,` und als Texttrennzeichen das Anführungszeichen `"` verwenden.
+
 ![Screenshot des Einfügemenüs in OnlyOffice](img/Verwendung/Einsatzsuche/Schritte/9a.png) ![Screenshot der Text Import Konfiguration in OnlyOffice](img/Verwendung/Einsatzsuche/Schritte/9b.png)
 
 #### Optional: Zusatzinformationen aus Pflichtenheftern
