@@ -50,7 +50,7 @@ def construct_name(first_name, last_name):
 		return f"{first_name} {last_name}"
 	return first_name or last_name
 
-def create_vcard(first_name = None, last_name = None, function = None, phone_1 = None, phone_2 = None, email = None, organisation = { "name": None, "id": None }):
+def create_vcard(first_name = None, last_name = None, function = None, phone_1 = None, phone_2 = None, email = None, organisation = { "name": None, "id": None }, pflichtenheft:int = None):
 	"""Convert kontaktPerson data to VCard format"""
 	fields = {
 		"BEGIN": "VCARD",
@@ -65,7 +65,8 @@ def create_vcard(first_name = None, last_name = None, function = None, phone_1 =
 		"EMAIL": email,
 		"PRODID": "X-ZIVIDISCONNECT",
 		"REV": f"{datetime.datetime.now().isoformat()}Z",
-		"END": "VCARD"
+		"END": "VCARD",
+		"URL": f"https://ziviconnect.admin.ch/zdp/pflichtenheft/{pflichtenheft}" if pflichtenheft else None
 	}
 
 	if first_name or last_name:
@@ -135,7 +136,8 @@ def json_to_csv(json_data, language, vcf_dir=None):
 			get('kontaktPersonTelefon1'),
 			get('kontaktPersonTelefon2'),
 			get('kontaktPersonEmail'),
-			organisation
+			organisation,
+			get('id')
 		)
 		vcard_path = save_vcard(contact_vcard, vcf_dir, contact_name, organisation["id"])
 
@@ -144,7 +146,8 @@ def json_to_csv(json_data, language, vcf_dir=None):
 		company_vcard = create_vcard(
 			phone_1=get('eibTelefon'),
 			email=get('eibEmail'),
-			organisation=organisation
+			organisation=organisation,
+			pflichtenheft=get('id')
 		)
 		save_vcard(company_vcard, vcf_dir, organisation["id"])
 
