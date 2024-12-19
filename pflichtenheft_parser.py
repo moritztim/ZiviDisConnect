@@ -69,10 +69,8 @@ def create_vcard(first_name = None, last_name = None, function = None, phone_1 =
 		"URL": f"https://ziviconnect.admin.ch/zdp/pflichtenheft/{pflichtenheft}" if pflichtenheft else None
 	}
 
-	if first_name or last_name:
-		fields["RELATED"] = organisation["id"]
-	else:
-		fields["UID"] = organisation["id"]
+	uid = f"zivi-{pflichtenheft}" if pflichtenheft else None
+	fields["RELATED" if first_name or last_name else "UID"] = uid # Add UID to company or associate person with company by UID
 
 	fields = {k: v for k, v in fields.items() if v} # Remove empty fields
 	return "\n".join([f"{k}:{v}" for k, v in fields.items()]) # Convert to string
