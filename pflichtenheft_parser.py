@@ -139,15 +139,14 @@ def json_to_csv(json_data, language, vcf_dir=None):
 		)
 		vcard_path = save_vcard(contact_vcard, vcf_dir, contact_name, organisation["id"])
 
-	# Create and save company vCard
+	# Create and save organisation vCard
 	if vcf_dir:
-		company_vcard = create_vcard(
+		organisation_vcard = create_vcard(
 			phone_1=get("eibTelefon"),
 			email=get("eibEmail"),
 			organisation=organisation,
 			pflichtenheft=get("id")
 		)
-		save_vcard(company_vcard, vcf_dir, organisation["id"])
 
 	return DELIMITER.join(
 		[f"\"{str(item)}\"" for item in [
