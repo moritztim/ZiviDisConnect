@@ -12,7 +12,8 @@ DELIMITER = ","
 HEADER = DELIMITER.join([
 	"PLZ",
 	"Land",
-	"Einsatzbetrieb",
+	"Einsatzbetrieb Name",
+	"Einsatzbetrieb VCard",
 	"Tätigkeiten",
 	"Mindestdauer",
 	"Arbeitszeitenmodell",
@@ -125,7 +126,7 @@ def json_to_csv(json_data, language, vcf_dir=None):
 	# Create and save contact person vCard
 	organisation = { "id": get("eibNummer"), "name": get("eibName") }
 	contact_name = construct_name(get("kontaktPersonVorname"), get("kontaktPersonName"))
-	vcard_path = ""
+	contact_vcard_path = ""
 	if contact_name and vcf_dir:
 		contact_vcard = create_vcard(
 			get("kontaktPersonVorname"),
@@ -137,9 +138,10 @@ def json_to_csv(json_data, language, vcf_dir=None):
 			organisation,
 			get("id")
 		)
-		vcard_path = save_vcard(contact_vcard, vcf_dir, contact_name, organisation["id"])
+		contact_vcard_path = save_vcard(contact_vcard, vcf_dir, contact_name, organisation["id"])
 
 	# Create and save organisation vCard
+	organisation_vcard_path = ""
 	if vcf_dir:
 		organisation_vcard = create_vcard(
 			phone_1=get("eibTelefon"),
@@ -147,12 +149,14 @@ def json_to_csv(json_data, language, vcf_dir=None):
 			organisation=organisation,
 			pflichtenheft=get("id")
 		)
+		organisation_vcard_path = save_vcard(organisation_vcard, vcf_dir, organisation["id"])
 
 	return DELIMITER.join(
 		[f"\"{str(item)}\"" for item in [
 			get("eibAdresse", "plz"),
 			get("eibAdresse", "land", f"text{language}") or "Schweiz",
 			organisation["name"],
+			organisation_vcard_path,
 			extract_sub_csv(get("taetigkeitList")),
 			get("mindestdauerEinsatzInWochen"),
 			get("arbeitszeitmodell", f"text{language}"),
@@ -162,7 +166,7 @@ def json_to_csv(json_data, language, vcf_dir=None):
 			convert_boolean_value(get("verpflegungAngeboten")),
 			extract_kurs_codes(get("kursZiviList")),
 			contact_name,
-			vcard_path,
+			contact_vcard_path,
 			convert_boolean_value(get("schwerpunktprogramm"))
 		]]
 	)
