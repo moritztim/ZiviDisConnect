@@ -5,6 +5,7 @@ import glob
 import os
 import traceback
 import argparse
+import datetime
 
 DELIMITER = ','
 
@@ -49,23 +50,31 @@ def construct_name(first_name, last_name):
 		return f"{first_name} {last_name}"
 	return first_name or last_name
 
-def create_vcard(first_name, last_name, function, phone_1, phone_2, email, organisation):
+def create_vcard(first_name = None, last_name = None, function = None, phone_1 = None, phone_2 = None, email = None, organisation = { "name": None, "id": None }):
 	"""Convert kontaktPerson data to VCard format"""
 	fields = {
 		"BEGIN": "VCARD",
 		"VERSION": "4.0",
-		"FN": construct_name(first_name, last_name),
-		"N": f"{last_name};{first_name};;;" if first_name or last_name else "",
-		"ORG": organisation,
-		"KIND": "org" if not first_name and not last_name and not function and organisation else "individual",
+		"FN": construct_name(first_name, last_name) if first_name or last_name else organisation["name"],
+		"N": f"{last_name};{first_name};;;" if first_name or last_name else f";;;{organisation["name"]}" if organisation["name"] else "",
+		"ORG": organisation["name"],
+		"KIND": "org" if not first_name and not last_name and not function and organisation["name"] else "individual",
 		"TITLE": function,
 		"TEL;TYPE=WORK,X-1": phone_1,
 		"TEL;TYPE=WORK,X-2": phone_2,
 		"EMAIL": email,
+		"PRODID": "X-ZIVIDISCONNECT",
+		"REV": f"{datetime.datetime.now().isoformat()}Z",
 		"END": "VCARD"
 	}
-	fields = {k: v for k, v in fields.items() if v}
-	return "\n".join([f"{k}:{v}" for k, v in fields.items()])
+
+	if first_name or last_name:
+		fields["RELATED"] = organisation["id"]
+	else:
+		fields["UID"] = organisation["id"]
+
+	fields = {k: v for k, v in fields.items() if v} # Remove empty fields
+	return "\n".join([f"{k}:{v}" for k, v in fields.items()]) # Convert to string
 
 def save_vcard(vcard_content, vcf_dir, filename=None, organisation_id=None):
 	"""
@@ -115,7 +124,7 @@ def json_to_csv(json_data, language, vcf_dir=None):
 		return "" if value == None or value == "n/a" else value
 
 	# Create and save contact person vCard
-	company_id = get('eibNummer')
+	organisation = { "id": get("eibNummer"), "name": get('eibName') }
 	contact_name = construct_name(get('kontaktPersonVorname'), get('kontaktPersonName'))
 	vcard_path = ""
 	if contact_name and vcf_dir:
@@ -126,28 +135,24 @@ def json_to_csv(json_data, language, vcf_dir=None):
 			get('kontaktPersonTelefon1'),
 			get('kontaktPersonTelefon2'),
 			get('kontaktPersonEmail'),
-			get('eibName')
+			organisation
 		)
-		vcard_path = save_vcard(contact_vcard, vcf_dir, contact_name, company_id)
+		vcard_path = save_vcard(contact_vcard, vcf_dir, contact_name, organisation["id"])
 
 	# Create and save company vCard
 	if vcf_dir:
 		company_vcard = create_vcard(
-			"",
-			get('eibName'),
-			"",
-			get('eibTelefon'),
-			"",
-			get('eibEmail'),
-			get('eibName')
+			phone_1=get('eibTelefon'),
+			email=get('eibEmail'),
+			organisation=organisation
 		)
-		save_vcard(company_vcard, vcf_dir, company_id)
+		save_vcard(company_vcard, vcf_dir, organisation["id"])
 
 	return DELIMITER.join(
 		[f"\"{str(item)}\"" for item in [
 			get('eibAdresse', 'plz'),
 			get('eibAdresse', 'land', f'text{language}') or "Schweiz",
-			get('eibName'),
+			organisation['name'],
 			extract_sub_csv(get('taetigkeitList')),
 			get('mindestdauerEinsatzInWochen'),
 			get('arbeitszeitmodell', f'text{language}'),
