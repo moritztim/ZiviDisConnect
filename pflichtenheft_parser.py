@@ -72,8 +72,8 @@ def create_vcard(first_name = None, last_name = None, function = None, phone_1 =
 	uid = f"zivi-{pflichtenheft}" if pflichtenheft else None
 	fields["RELATED" if first_name or last_name else "UID"] = uid # Add UID to company or associate person with company by UID
 
-	fields = {k: v for k, v in fields.items() if v} # Remove empty fields
-	return "\n".join([f"{k}:{v}" for k, v in fields.items()]) # Convert to string
+	fields = {key: value for key, value in fields.items() if value} # Remove empty fields
+	return "\n".join([f"{key}:{value}" for key, value in fields.items()]) # Convert to string
 
 def save_vcard(vcard_content, vcf_dir, filename=None, organisation_id=None):
 	"""
