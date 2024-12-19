@@ -27,10 +27,10 @@ Die Nutzeroberfläche des offiziellen Portals des Schweizer Zivieldienst "ZiviCo
 #### Optional: Zusatzinformationen aus Pflichtenheftern
 
 10. Einzelnes Pflichtenheft öffnen
-11. Schritte 3 - 4
+11. Schritte `3` bis `4` wiederholen
 12. Mit `f5` oder `Strg` + `R` die Seite neu laden
 13. In den Entwicklerwerkzeugen den Eintrag mit vom Typ `json` mit der Pflichtenheftnummer als Dateiname via Rechtsklick-Menü herunterladen
 14. Die Datei in einem Ordner speichern
-15. Schritte 10 - 15 für alle Pflichtenhefte wiederholen
+15. Schritte `10` bis `15` für alle Pflichtenhefte wiederholen
 16. Die Dateien mit dem Python Skript [pflichtenheft_parser.py](pflichtenheft_parser.py) einlesen
 17. Das Resultat in der [Excel Tabelle](Einsatzsuche.xlsx) im Arbeitsblatt `Pflichtenhefte` einfügen, in der Reihenfolge der Suchresultate.
