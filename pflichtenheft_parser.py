@@ -7,26 +7,26 @@ import traceback
 import argparse
 import datetime
 
-DELIMITER = ','
+DELIMITER = ","
 
 HEADER = DELIMITER.join([
-	'PLZ',
-	'Land',
-	'Einsatzbetrieb',
-	'Tätigkeiten',
-	'Mindestdauer',
-	'Arbeitszeitenmodell',
-	'Wochenendarbeit Möglich',
-	'Nachtarbeit Möglich',
-	'Unterkunft',
-	'Verpflegung', 
-	'Kurse',
-	'Kontaktperson Name',
-	'Kontaktperson VCard',
-	'Schwerpunktprogramm'
+	"PLZ",
+	"Land",
+	"Einsatzbetrieb",
+	"Tätigkeiten",
+	"Mindestdauer",
+	"Arbeitszeitenmodell",
+	"Wochenendarbeit Möglich",
+	"Nachtarbeit Möglich",
+	"Unterkunft",
+	"Verpflegung", 
+	"Kurse",
+	"Kontaktperson Name",
+	"Kontaktperson VCard",
+	"Schwerpunktprogramm"
 ])
 
-def extract_sub_csv(list_of_items, key='kurzbeschreibung'):
+def extract_sub_csv(list_of_items, key="kurzbeschreibung"):
 	"""Create sub-csv strings from lists"""
 	if not list_of_items:
 		return ""
@@ -36,13 +36,13 @@ def extract_kurs_codes(kurs_list):
 	"""Extract course codes"""
 	if not kurs_list:
 		return ""
-	return ", ".join(kurs['code'] for kurs in kurs_list)
+	return ", ".join(kurs["code"] for kurs in kurs_list)
 
 def convert_boolean_value(value):
 	"""Convert various boolean representations to TRUE/FALSE"""
 	if isinstance(value, dict):
-		return 'TRUE' if value.get('code') in ['JA', 'IE'] else 'FALSE'
-	return 'TRUE' if value else 'FALSE'
+		return "TRUE" if value.get("code") in ["JA", "IE"] else "FALSE"
+	return "TRUE" if value else "FALSE"
 
 def construct_name(first_name, last_name):
 	"""Construct full name from first and last name"""
@@ -101,7 +101,7 @@ def save_vcard(vcard_content, vcf_dir, filename=None, organisation_id=None):
 			# Save directly in vcf_dir
 			filepath = os.path.join(vcf_dir, f"{filename}.vcf")
 	
-	with open(filepath, 'w', encoding='utf-8') as f:
+	with open(filepath, "w", encoding="utf-8") as f:
 		f.write(vcard_content)
 	
 	return filepath
@@ -125,56 +125,56 @@ def json_to_csv(json_data, language, vcf_dir=None):
 		return "" if value == None or value == "n/a" else value
 
 	# Create and save contact person vCard
-	organisation = { "id": get("eibNummer"), "name": get('eibName') }
-	contact_name = construct_name(get('kontaktPersonVorname'), get('kontaktPersonName'))
+	organisation = { "id": get("eibNummer"), "name": get("eibName") }
+	contact_name = construct_name(get("kontaktPersonVorname"), get("kontaktPersonName"))
 	vcard_path = ""
 	if contact_name and vcf_dir:
 		contact_vcard = create_vcard(
-			get('kontaktPersonVorname'),
-			get('kontaktPersonName'),
-			get('kontaktPersonFunktion'),
-			get('kontaktPersonTelefon1'),
-			get('kontaktPersonTelefon2'),
-			get('kontaktPersonEmail'),
+			get("kontaktPersonVorname"),
+			get("kontaktPersonName"),
+			get("kontaktPersonFunktion"),
+			get("kontaktPersonTelefon1"),
+			get("kontaktPersonTelefon2"),
+			get("kontaktPersonEmail"),
 			organisation,
-			get('id')
+			get("id")
 		)
 		vcard_path = save_vcard(contact_vcard, vcf_dir, contact_name, organisation["id"])
 
 	# Create and save company vCard
 	if vcf_dir:
 		company_vcard = create_vcard(
-			phone_1=get('eibTelefon'),
-			email=get('eibEmail'),
+			phone_1=get("eibTelefon"),
+			email=get("eibEmail"),
 			organisation=organisation,
-			pflichtenheft=get('id')
+			pflichtenheft=get("id")
 		)
 		save_vcard(company_vcard, vcf_dir, organisation["id"])
 
 	return DELIMITER.join(
 		[f"\"{str(item)}\"" for item in [
-			get('eibAdresse', 'plz'),
-			get('eibAdresse', 'land', f'text{language}') or "Schweiz",
-			organisation['name'],
-			extract_sub_csv(get('taetigkeitList')),
-			get('mindestdauerEinsatzInWochen'),
-			get('arbeitszeitmodell', f'text{language}'),
-			'TRUE' if get('wochenendarbeit', 'code') == 'M' else 'FALSE',
-			'TRUE' if get('nachtarbeit', 'code') == 'J' else 'FALSE',
-			convert_boolean_value(get('unterkunftAngeboten')),
-			convert_boolean_value(get('verpflegungAngeboten')),
-			extract_kurs_codes(get('kursZiviList')),
+			get("eibAdresse", "plz"),
+			get("eibAdresse", "land", f"text{language}") or "Schweiz",
+			organisation["name"],
+			extract_sub_csv(get("taetigkeitList")),
+			get("mindestdauerEinsatzInWochen"),
+			get("arbeitszeitmodell", f"text{language}"),
+			"TRUE" if get("wochenendarbeit", "code") == "M" else "FALSE",
+			"TRUE" if get("nachtarbeit", "code") == "J" else "FALSE",
+			convert_boolean_value(get("unterkunftAngeboten")),
+			convert_boolean_value(get("verpflegungAngeboten")),
+			extract_kurs_codes(get("kursZiviList")),
 			contact_name,
 			vcard_path,
-			convert_boolean_value(get('schwerpunktprogramm'))
+			convert_boolean_value(get("schwerpunktprogramm"))
 		]]
 	)
 
 def main():
-	parser = argparse.ArgumentParser(description='Convert JSON to CSV with optional vCard generation')
-	parser.add_argument('--language', default='DE', help='Language code', choices=['DE', 'FR', 'IT'])
-	parser.add_argument('--vcf', help='Directory path for vCard files. If not provided, vCards will not be generated.')
-	parser.add_argument('files', nargs='+', help='JSON files to process')
+	parser = argparse.ArgumentParser(description="Convert JSON to CSV with optional vCard generation")
+	parser.add_argument("--language", default="DE", help="Language code", choices=["DE", "FR", "IT"])
+	parser.add_argument("--vcf", help="Directory path for vCard files. If not provided, vCards will not be generated.")
+	parser.add_argument("files", nargs="+", help="JSON files to process")
 	
 	args = parser.parse_args()
 
@@ -182,7 +182,7 @@ def main():
 	
 	for json_file in args.files:
 		try:
-			with open(json_file, 'r', encoding='utf-8') as f:
+			with open(json_file, "r", encoding="utf-8") as f:
 				json_data = json.load(f)
 				processed_row = json_to_csv(json_data, args.language, args.vcf)
 				print(processed_row)
@@ -191,5 +191,5 @@ def main():
 			traceback.print_exc()
 			sys.exit(1)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	main()
