@@ -67,24 +67,24 @@ def create_vcard(first_name, last_name, function, phone_1, phone_2, email, organ
 	fields = {k: v for k, v in fields.items() if v}
 	return "\n".join([f"{k}:{v}" for k, v in fields.items()])
 
-def save_vcard(vcard_content, vcf_dir, filename=None, company_id=None):
+def save_vcard(vcard_content, vcf_dir, filename=None, organisation_id=None):
 	"""
 	Save vCard to file.
-	If filename is not provided but company_id is, company_id becomes the filename.
-	If company_id is provided with filename, creates a subfolder with company_id.
+	If filename is not provided but organisation_id is, organisation_id becomes the filename.
+	If organisation_id is provided with filename, creates a subfolder with organisation_id.
 	"""
 	if not vcf_dir:
 		return
 	
 	if filename is None:
-		if company_id is None:
-			raise ValueError("Either filename or company_id must be provided")
-		# Use company_id as filename and save directly in vcf_dir
-		filepath = os.path.join(vcf_dir, f"{company_id}.vcf")
+		if organisation_id is None:
+			raise ValueError("Either filename or organisation_id must be provided")
+		# Use organisation_id as filename and save directly in vcf_dir
+		filepath = os.path.join(vcf_dir, f"{organisation_id}.vcf")
 	else:
-		if company_id is not None:
+		if organisation_id is not None:
 			# Create company directory and save file there
-			company_dir = os.path.join(vcf_dir, str(company_id))
+			company_dir = os.path.join(vcf_dir, str(organisation_id))
 			os.makedirs(company_dir, exist_ok=True)
 			filepath = os.path.join(company_dir, f"{filename}.vcf")
 		else:
