@@ -51,19 +51,21 @@ def construct_name(first_name, last_name):
 
 def create_vcard(first_name, last_name, function, phone_1, phone_2, email, organisation):
 	"""Convert kontaktPerson data to VCard format"""
-	return "\n".join([
-		"BEGIN:VCARD",
-		"VERSION:4.0",
-		f"FN:{construct_name(first_name, last_name)}",
-		f"N:{last_name};{first_name};;;",
-		f"ORG:{organisation}",
-		f"KIND:{"org" if not first_name and not last_name and not function and organisation else "individual"}",
-		f"TITLE:{function}",
-		f"TEL;TYPE=WORK,X-1:{phone_1}",
-		f"TEL;TYPE=WORK,X-2:{phone_2}",
-		f"EMAIL:{email}",
-		"END:VCARD"
-	])
+	fields = {
+		"BEGIN": "VCARD",
+		"VERSION": "4.0",
+		"FN": construct_name(first_name, last_name),
+		"N": f"{last_name};{first_name};;;" if first_name or last_name else "",
+		"ORG": organisation,
+		"KIND": "org" if not first_name and not last_name and not function and organisation else "individual",
+		"TITLE": function,
+		"TEL;TYPE=WORK,X-1": phone_1,
+		"TEL;TYPE=WORK,X-2": phone_2,
+		"EMAIL": email,
+		"END": "VCARD"
+	}
+	fields = {k: v for k, v in fields.items() if v}
+	return "\n".join([f"{k}:{v}" for k, v in fields.items()])
 
 def save_vcard(vcard_content, vcf_dir, filename=None, company_id=None):
 	"""
