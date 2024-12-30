@@ -8,7 +8,7 @@ import random
 import csv
 from collections.abc import MutableMapping
 from zdp_api import ZiviConnectClient, Locale, ApiError
-from pflichtenheft_parser import json_to_csv, HEADER
+from pflichtenheft_parser import json_to_csv, HEADER, normalize
 
 TOKEN_KEY = "ZDP_API_TOKEN"
 MIN_SCRAPE_INTERVAL = 6
@@ -24,6 +24,8 @@ def create_cli():
 						default='de-CH', help='Locale for API responses')
 	parser.add_argument('--format', choices=['json', 'csv'], default='json',
 						help='Output format')
+	parser.add_argument('--allow-newlines', action='store_true',
+						help='Allow newlines in CSV fields')
 	
 	# Add subparsers for different commands
 	subparsers = parser.add_subparsers(dest='command', help='Available commands')
@@ -120,6 +122,9 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 			with open(file_name, 'w') as f:
 				if output_type == OutputType.SEARCH:
 					data = [flatten(entry, separator=".") for entry in data]
+					for entry in data:
+						for key in entry.keys():
+							entry[key] = normalize(entry[key], args.allow_newlines)
 					writer = csv.DictWriter(f, fieldnames=data[0].keys())
 					writer.writeheader()
 					writer.writerows(data)

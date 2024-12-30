@@ -105,7 +105,16 @@ def save_vcard(vcard_content, vcf_dir, filename=None, organisation_id=None):
 	
 	return filepath
 
-def json_to_csv(json_data, language, vcf_dir=None):
+def normalize(value, allow_newlines = False, add_quotes = False):
+	"""Normalize value for CSV"""
+	value = str(value)
+	if add_quotes:
+		value = f'"{value}"'
+	if allow_newlines:
+		return value
+	return value.replace("\n", " ").replace("\r", " ")
+
+def json_to_csv(json_data, language, allow_newlines = False, vcf_dir=None):
 	"""Process JSON data and return a row for CSV"""
 	
 	language = language.capitalize()
@@ -152,7 +161,7 @@ def json_to_csv(json_data, language, vcf_dir=None):
 		organisation_vcard_path = save_vcard(organisation_vcard, vcf_dir, organisation["id"])
 
 	return DELIMITER.join(
-		[f"\"{str(item)}\"" for item in [
+		[f"{normalize(item, allow_newlines, add_quotes=True)}" for item in [
 			get("eibAdresse", "plz"),
 			get("eibAdresse", "land", f"text{language}") or "Schweiz",
 			organisation["name"],
@@ -175,6 +184,7 @@ def main():
 	parser = argparse.ArgumentParser(description="Convert JSON to CSV with optional vCard generation")
 	parser.add_argument("--language", default="DE", help="Language code", choices=["DE", "FR", "IT"])
 	parser.add_argument("--vcf", help="Directory path for vCard files. If not provided, vCards will not be generated.")
+	parser.add_argument("--allow-newlines", action="store_true", help="Allow newlines in CSV fields")
 	parser.add_argument("files", nargs="+", help="JSON files to process")
 	
 	args = parser.parse_args()
@@ -185,7 +195,7 @@ def main():
 		try:
 			with open(json_file, "r", encoding="utf-8") as f:
 				json_data = json.load(f)
-				processed_row = json_to_csv(json_data, args.language, args.vcf)
+				processed_row = json_to_csv(json_data, args.language, args.allow_newlines, args.vcf)
 				print(processed_row)
 		except Exception as e:
 			print(f"Error processing {json_file}: {str(e)}")
