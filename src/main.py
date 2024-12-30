@@ -92,7 +92,7 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 		return
 	
 	if args.format == 'csv' and output_type == OutputType.DETAILS:
-		output(json_to_csv(data), args, title=title if title else data['id'])
+		return output(json_to_csv(data), args, title=title if title else data['id'])
 
 	if isinstance(args.scrape, str):
 		os.makedirs(args.scrape, exist_ok=True)
@@ -119,7 +119,7 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 			sys.stdout.write('\n')
 		return
 	
-	output(format_output(data, args.format), args, OutputType.RAW, trailing_newline, title, first, last)
+	return output(format_output(data, args.format), args, OutputType.RAW, trailing_newline, title, first, last)
 
 def main():
 	parser = create_cli()
