@@ -113,7 +113,7 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 	if args.format == 'csv' and output_type == OutputType.DETAILS:
 		if first or first == None:
 			output(HEADER, args, title=title)
-		return output(json_to_csv(data, args.locale.split('-')[0], f"{args.scrape}/VCards" if args.scrape else None), args, title=title)
+		return output(json_to_csv(data, args.locale.split('-')[0], vcf_dir=f"{args.scrape}/VCards" if args.scrape else None), args, title=title)
 
 	if isinstance(args.scrape, str):
 		os.makedirs(args.scrape, exist_ok=True)
