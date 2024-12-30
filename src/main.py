@@ -76,4 +76,4 @@ def main():
 if __name__ == '__main__':
 	main()
 
-# This script includes creative contributions from a generative AI.
+# This script includes creative contributions from a generative AI. https://declare-ai.org/1.0.0/creative.html
