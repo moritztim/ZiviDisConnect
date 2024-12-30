@@ -79,7 +79,7 @@ def format_output(data, format: str, indent:int = 0) -> str:
 def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline:bool = True, title:str = None, first:bool = True, last:bool = False):
 	if not title:
 		title = output_type
-	if args.scrape and args.format == 'json' and output_type != OutputType.RAW:
+	if args.scrape == True and args.format == 'json' and output_type != OutputType.RAW:
 		# {search_results: [ ... ], details: { [...] }}
 		output(f"{"{" if output_type == OutputType.SEARCH else ","}\n", args, trailing_newline=False)
 		if first:
