@@ -125,4 +125,21 @@ class ZiviConnectClient:
 
 		return response.json()
 
+	def pflichtenheft(self, pflichtenheft_id: int) -> dict:
+		"""
+		Get details of a Pflichtenheft entry.
+		
+		Args:
+			pflichtenheft_id: ID of the Pflichtenheft entry
+		"""
+		response = self._session.get(
+			f"{self.base_url}/pflichtenheft/{pflichtenheft_id}",
+			headers=self._get_headers()
+		)
+
+		if response.status_code != 200:
+			raise ApiError(f"API request failed with status {response.status_code}: {response.text}")
+
+		return response.json()
+
 # This script includes creative contributions from a generative AI. https://declare-ai.org/1.0.0/creative.html

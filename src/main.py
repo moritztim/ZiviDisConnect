@@ -14,6 +14,10 @@ def create_cli():
 	
 	# Add subparsers for different commands
 	subparsers = parser.add_subparsers(dest='command', help='Available commands')
+
+	# Details command
+	details_parser = subparsers.add_parser('details', help='Get details for a Pflichtenheft entry')
+	details_parser.add_argument('id', type=int, help='ID of the Pflichtenheft entry')
 	
 	# Search command
 	search_parser = subparsers.add_parser('search', help='Search for Pflichtenheft entries')
@@ -65,6 +69,9 @@ def main():
 				sprache_ids=args.languages,
 				kennzeichnung_speziell_codes=args.special_codes
 			))
+		
+		elif args.command == 'details':
+			print(client.pflichtenheft(args.id))
 			
 	except ApiError as e:
 		print(f"Error: {str(e)}", file=sys.stderr)
