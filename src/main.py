@@ -6,6 +6,7 @@ import json
 import time
 import random
 import csv
+from collections.abc import MutableMapping
 from zdp_api import ZiviConnectClient, Locale, ApiError
 from pflichtenheft_parser import json_to_csv, HEADER
 
@@ -76,6 +77,18 @@ def format_output(data, format: str, indent:int = 0) -> str:
 		return output
 	return str(data)
 
+# https://stackoverflow.com/a/6027615
+# Author: Ophir Carmi
+def flatten(dictionary, parent_key='', separator='_'):
+    items = []
+    for key, value in dictionary.items():
+        new_key = parent_key + separator + key if parent_key else key
+        if isinstance(value, MutableMapping):
+            items.extend(flatten(value, new_key, separator=separator).items())
+        else:
+            items.append((new_key, value))
+    return dict(items)
+
 def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline:bool = True, title:str = None, first:bool = None, last:bool = None):
 	if output_type == OutputType.RAW:
 		if trailing_newline:
@@ -106,6 +119,7 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 		if args.format == 'csv' and output_type == OutputType.SEARCH:
 			with open(file_name, 'w') as f:
 				if output_type == OutputType.SEARCH:
+					data = [flatten(entry, separator=".") for entry in data]
 					writer = csv.DictWriter(f, fieldnames=data[0].keys())
 					writer.writeheader()
 					writer.writerows(data)
