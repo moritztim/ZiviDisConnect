@@ -119,7 +119,7 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 			sys.stdout.write('\n')
 		return
 	
-	output(format_output(data, args.format), args, OutputType.RAW, trailing_newline, title)
+	output(format_output(data, args.format), args, OutputType.RAW, trailing_newline, title, first, last)
 
 def main():
 	parser = create_cli()
