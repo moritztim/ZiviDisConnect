@@ -8,7 +8,7 @@ import random
 from zdp_api import ZiviConnectClient, Locale, ApiError
 
 TOKEN_KEY = "ZDP_API_TOKEN"
-MIN_SCRAPE_INTERVAL = 10
+MIN_SCRAPE_INTERVAL = 6
 """ Minimum interval between scraping requests in seconds """
 SCRAPE_INTEVAL_FLUCTUATION = 3
 """ Maximum fluctuation in scraping interval in seconds """
