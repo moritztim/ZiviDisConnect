@@ -1,13 +1,15 @@
 import argparse
 from typing import List
 import sys
+import os
 import json
 from zdp_api import ZiviConnectClient, Locale, ApiError
 
+TOKEN_KEY = "ZDP_API_TOKEN"
+
 def create_cli():
-	parser = argparse.ArgumentParser(description='ZiviConnect CLI Tool')
-	
-	parser.add_argument('--token', help='Authentication token')
+	parser = argparse.ArgumentParser(description='ZiviConnect CLI Tool', 
+									 epilog=f'Make sure to set the {TOKEN_KEY} environment variable.')
 	parser.add_argument('--cookies', help='Path to cookies file')
 	parser.add_argument('--locale', choices=['de-CH', 'fr-CH', 'it-CH'],
 						default='de-CH', help='Locale for API responses')
@@ -55,7 +57,11 @@ def main():
 		sys.exit(1)
 
 	# Initialize client
-	client = ZiviConnectClient(args.token, parse_cookies_file(args.cookies) if args.cookies else None, args.locale)
+	token = os.getenv(TOKEN_KEY)
+	if not token:
+		print(f"Error: {TOKEN_KEY} environment variable not set.", file=sys.stderr)
+		sys.exit(1)
+	client = ZiviConnectClient(token, parse_cookies_file(args.cookies) if args.cookies else None, args.locale)
 	
 	try:
 
