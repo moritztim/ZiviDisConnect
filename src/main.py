@@ -76,7 +76,7 @@ def format_output(data, format: str, indent:int = 0) -> str:
 		return output
 	return str(data)
 
-def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline:bool = True, title:str = None, first:bool = True, last:bool = False):
+def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline:bool = True, title:str = None, first:bool = None, last:bool = None):
 	if not title:
 		title = output_type
 	if output_type == OutputType.RAW:
@@ -85,7 +85,7 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 	if args.scrape == True and args.format == 'json' and output_type != OutputType.RAW:
 		# {search_results: [ ... ], details: { [...] }}
 		output(f"{"{" if output_type == OutputType.SEARCH else ","}\n", args, trailing_newline=False)
-		if first:
+		if first or first == None:
 			output(f"{INDENT}\"{output_type}\":{f"\n{INDENT * 2}[" if output_type == OutputType.DETAILS else ""}", args)
 		output(format_output(data, args.format, 2+int(output_type == OutputType.DETAILS)), args, trailing_newline=False, title=title if title else "data")
 		if output_type == OutputType.SEARCH:
@@ -115,7 +115,11 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 			with open(file_name, 'a+') as f:
 				f.write(str(data))
 			return
-	
+		
+		if args.format == 'json':
+			# if first or last are None, that means we are not in a loop.
+			return output(f"{"[\n" if first else ""}{format_output(data, args.format, first != None)}{"," if last == False else "\n]" if last else ""}", args, title=title)
+		
 	if output_type == OutputType.RAW:
 		sys.stdout.write(data)
 		return
