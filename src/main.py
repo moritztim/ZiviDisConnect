@@ -7,7 +7,7 @@ import time
 import random
 import csv
 from zdp_api import ZiviConnectClient, Locale, ApiError
-from pflichtenheft_parser import json_to_csv
+from pflichtenheft_parser import json_to_csv, HEADER
 
 TOKEN_KEY = "ZDP_API_TOKEN"
 MIN_SCRAPE_INTERVAL = 6
@@ -77,8 +77,6 @@ def format_output(data, format: str, indent:int = 0) -> str:
 	return str(data)
 
 def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline:bool = True, title:str = None, first:bool = None, last:bool = None):
-	if not title:
-		title = output_type
 	if output_type == OutputType.RAW:
 		if trailing_newline:
 			data = f"{data}\n"
@@ -94,13 +92,18 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 			output(f"\n{INDENT * 2}]\n{"}"}", args)
 		return
 	
+	if not title:
+		title = output_type
+
 	if args.format == 'csv' and output_type == OutputType.DETAILS:
-		return output(json_to_csv(data), args, title=title if title else data['id'])
+		if first or first == None:
+			output(HEADER, args, title=title)
+		return output(json_to_csv(data, args.locale.split('-')[0], f"{args.scrape}/VCards" if args.scrape else None), args, title=title)
 
 	if isinstance(args.scrape, str):
 		os.makedirs(args.scrape, exist_ok=True)
 		file_name = f"{args.scrape}/{title}.{args.format}"
-		if args.format == 'csv' and output_type != OutputType.DETAILS:
+		if args.format == 'csv' and output_type == OutputType.SEARCH:
 			with open(file_name, 'w') as f:
 				if output_type == OutputType.SEARCH:
 					writer = csv.DictWriter(f, fieldnames=data[0].keys())
