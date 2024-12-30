@@ -3,9 +3,15 @@ from typing import List
 import sys
 import os
 import json
+import time
+import random
 from zdp_api import ZiviConnectClient, Locale, ApiError
 
 TOKEN_KEY = "ZDP_API_TOKEN"
+MIN_SCRAPE_INTERVAL = 10
+""" Minimum interval between scraping requests in seconds """
+SCRAPE_INTEVAL_FLUCTUATION = 3
+""" Maximum fluctuation in scraping interval in seconds """
 
 def create_cli():
 	parser = argparse.ArgumentParser(description='ZiviConnect CLI Tool', 
@@ -34,6 +40,7 @@ def create_cli():
 							 help='List of language IDs (max 3)')
 	search_parser.add_argument('--special-codes', nargs='+',
 							 help='List of special marking codes (max 3)')
+	search_parser.add_argument('--scrape', action='store_true', help='Scrape detailed information for results')
 
 	return parser
 
@@ -66,7 +73,7 @@ def main():
 	try:
 
 		if args.command == 'search':
-			print(client.search(
+			result = client.search(
 				search_text=args.text,
 				einsatzort_id=args.location_id,
 				umkreis=args.radius,
@@ -74,8 +81,17 @@ def main():
 				taetigkeitsbereich_ids=args.activity_areas,
 				sprache_ids=args.languages,
 				kennzeichnung_speziell_codes=args.special_codes
-			))
-		
+			)
+
+			if args.scrape:
+				print(f"{"{"}'result': {result},'details': [")
+				for entry in result:
+					print(f"{client.pflichtenheft(entry['pflichtenheftId'])},")
+					time.sleep(MIN_SCRAPE_INTERVAL + random.random()*SCRAPE_INTEVAL_FLUCTUATION)
+				print("]}")
+				return
+			print(result)
+
 		elif args.command == 'details':
 			print(client.pflichtenheft(args.id))
 			
