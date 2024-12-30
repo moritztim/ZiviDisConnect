@@ -2,3 +2,4 @@
 /Einsätze
 *.csv
 *.vcf
+*.pyc
