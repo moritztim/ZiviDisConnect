@@ -158,7 +158,8 @@ def main():
 			if args.scrape:
 				for key in range(len(result)):
 					output(client.pflichtenheft(result[key]['pflichtenheftId']), args, OutputType.DETAILS, first=(key == 0), last=(key == len(result)-1))
-					time.sleep(MIN_SCRAPE_INTERVAL + random.random()*SCRAPE_INTEVAL_FLUCTUATION)
+					if key < len(result)-1:
+						time.sleep(MIN_SCRAPE_INTERVAL + random.random()*SCRAPE_INTEVAL_FLUCTUATION)
 
 		elif args.command == 'details':
 			output(client.pflichtenheft(args.id))
