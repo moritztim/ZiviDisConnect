@@ -123,7 +123,6 @@ class ZiviConnectClient:
 		if response.status_code != 200:
 			raise ApiError(f"API request failed with status {response.status_code}: {response.text}")
 
-		# Parse response into Pflichtenheft objects
 		return response.json()
 
 # This script includes creative contributions from a generative AI. https://declare-ai.org/1.0.0/creative.html
