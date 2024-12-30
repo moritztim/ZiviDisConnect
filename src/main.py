@@ -5,7 +5,9 @@ import os
 import json
 import time
 import random
+import csv
 from zdp_api import ZiviConnectClient, Locale, ApiError
+from pflichtenheft_parser import json_to_csv
 
 TOKEN_KEY = "ZDP_API_TOKEN"
 MIN_SCRAPE_INTERVAL = 6
@@ -19,6 +21,8 @@ def create_cli():
 	parser.add_argument('--cookies', help='Path to cookies file')
 	parser.add_argument('--locale', choices=['de-CH', 'fr-CH', 'it-CH'],
 						default='de-CH', help='Locale for API responses')
+	parser.add_argument('--format', choices=['json', 'csv'], default='json',
+						help='Output format')
 	
 	# Add subparsers for different commands
 	subparsers = parser.add_subparsers(dest='command', help='Available commands')
@@ -40,7 +44,8 @@ def create_cli():
 							 help='List of language IDs (max 3)')
 	search_parser.add_argument('--special-codes', nargs='+',
 							 help='List of special marking codes (max 3)')
-	search_parser.add_argument('--scrape', action='store_true', help='Scrape detailed information for results')
+	search_parser.add_argument('--scrape', nargs='?', const=True, type=str, metavar='DIRECTORY',
+							 help='Scrape details for all search results and, if a value is provided, store the resulting files in a directory with the given name.')
 
 	return parser
 
@@ -54,6 +59,67 @@ def parse_cookies_file(file_path: str) -> dict:
 				if len(fields) >= 7:
 					cookies[fields[5]] = fields[6]
 	return cookies
+
+class OutputType:
+	RAW = 'raw'
+	SEARCH = 'search_results'
+	DETAILS = 'details'
+
+INDENT = "\t"
+
+def format_output(data, format: str, indent:int = 0) -> str:
+	if format == 'json':
+		rendered_indent = INDENT * indent
+		output = json.dumps(data, indent=INDENT)
+		if indent:
+			output = rendered_indent + output.replace('\n', f'\n{rendered_indent}')
+		return output
+	return str(data)
+
+def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline:bool = True, title:str = None, first:bool = True, last:bool = False):
+	if not title:
+		title = output_type
+	if args.scrape and args.format == 'json' and output_type != OutputType.RAW:
+		# {search_results: [ ... ], details: { [...] }}
+		output(f"{"{" if output_type == OutputType.SEARCH else ","}\n", args, trailing_newline=False)
+		if first:
+			output(f"{INDENT}\"{output_type}\":{f"\n{INDENT * 2}[" if output_type == OutputType.DETAILS else ""}", args)
+		output(format_output(data, args.format, 2+int(output_type == OutputType.DETAILS)), args, trailing_newline=False, title=title if title else "data")
+		if output_type == OutputType.SEARCH:
+			output(f"\n{INDENT}", args, trailing_newline=False)
+		if last and output_type == OutputType.DETAILS:
+			output(f"\n{INDENT * 2}]\n{"}"}", args)
+		return
+	
+	if args.format == 'csv' and output_type == OutputType.DETAILS:
+		output(json_to_csv(data), args, title=title if title else data['id'])
+
+	if isinstance(args.scrape, str):
+		os.makedirs(args.scrape, exist_ok=True)
+		file_name = f"{args.scrape}/{title}.{args.format}"
+		if args.format == 'csv' and output_type != OutputType.DETAILS:
+			with open(file_name, 'w') as f:
+				if output_type == OutputType.SEARCH:
+					writer = csv.DictWriter(f, fieldnames=data[0].keys())
+					writer.writeheader()
+					writer.writerows(data)
+					return
+				else:
+					f.write(str(data))
+					return
+		
+		if output_type == OutputType.RAW:
+			with open(file_name, 'a+') as f:
+				f.write(str(data))
+			return
+	
+	if output_type == OutputType.RAW:
+		sys.stdout.write(data)
+		if trailing_newline:
+			sys.stdout.write('\n')
+		return
+	
+	output(format_output(data, args.format), args, OutputType.RAW, trailing_newline, title)
 
 def main():
 	parser = create_cli()
@@ -83,17 +149,14 @@ def main():
 				kennzeichnung_speziell_codes=args.special_codes
 			)
 
+			output(result, args, OutputType.SEARCH)
 			if args.scrape:
-				print(f"{"{"}'result': {result},'details': [")
-				for entry in result:
-					print(f"{client.pflichtenheft(entry['pflichtenheftId'])},")
+				for key in range(len(result)):
+					output(client.pflichtenheft(result[key]['pflichtenheftId']), args, OutputType.DETAILS, first=(key == 0), last=(key == len(result)-1))
 					time.sleep(MIN_SCRAPE_INTERVAL + random.random()*SCRAPE_INTEVAL_FLUCTUATION)
-				print("]}")
-				return
-			print(result)
 
 		elif args.command == 'details':
-			print(client.pflichtenheft(args.id))
+			output(client.pflichtenheft(args.id))
 			
 	except ApiError as e:
 		print(f"Error: {str(e)}", file=sys.stderr)
