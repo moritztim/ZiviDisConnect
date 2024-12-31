@@ -1,5 +1,5 @@
 ![ZiviDisConnect](Logo/Light.png)
-Eine bessere User Experience für ZiviConnect 
+Eine bessere User Experience für ZiviConnect (in einer Excel Tabelle statt einer unfertigen mobile Web UI für 20 Mio. CHF).
 
 ## Was ist das?
 Die Nutzeroberfläche des offiziellen Portals des Schweizer Zivieldienst "ZiviConnect" ist fehlerbehaftet und unübersichtlich. Dieses Projekt enthält Werkzeuge, die bei der Verwendung von ZiviConnect helfen und die Benutzererfahrung verbessern sollen.
