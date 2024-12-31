@@ -9,7 +9,7 @@ import datetime
 
 DELIMITER = ","
 
-HEADER = DELIMITER.join([
+HEADER = [
 	"PLZ",
 	"Land",
 	"Einsatzbetrieb Name",
@@ -25,7 +25,7 @@ HEADER = DELIMITER.join([
 	"Kontaktperson Name",
 	"Kontaktperson VCard",
 	"Schwerpunktprogramm"
-])
+]
 
 def extract_sub_csv(list_of_items, key="kurzbeschreibung"):
 	"""Create sub-csv strings from lists"""
@@ -105,16 +105,14 @@ def save_vcard(vcard_content, vcf_dir, filename=None, organisation_id=None):
 	
 	return filepath
 
-def normalize(value, allow_newlines = False, add_quotes = False):
+def normalize(value, allow_newlines = False):
 	"""Normalize value for CSV"""
 	value = str(value)
-	if add_quotes:
-		value = f'"{value}"'
 	if allow_newlines:
 		return value
 	return value.replace("\n", " ").replace("\r", " ")
 
-def json_to_csv(json_data, language, allow_newlines = False, vcf_dir=None):
+def parse(json_data, language, allow_newlines = False, vcf_dir=None):
 	"""Process JSON data and return a row for CSV"""
 	
 	language = language.capitalize()
@@ -160,8 +158,7 @@ def json_to_csv(json_data, language, allow_newlines = False, vcf_dir=None):
 		)
 		organisation_vcard_path = save_vcard(organisation_vcard, vcf_dir, organisation["id"])
 
-	return DELIMITER.join(
-		[f"{normalize(item, allow_newlines, add_quotes=True)}" for item in [
+	return [f"{normalize(item, allow_newlines)}" for item in [
 			get("eibAdresse", "plz"),
 			get("eibAdresse", "land", f"text{language}") or "Schweiz",
 			organisation["name"],
@@ -177,8 +174,8 @@ def json_to_csv(json_data, language, allow_newlines = False, vcf_dir=None):
 			contact_name,
 			contact_vcard_path,
 			convert_boolean_value(get("schwerpunktprogramm"))
-		]]
-	)
+		]
+	]
 
 def main():
 	parser = argparse.ArgumentParser(description="Convert JSON to CSV with optional vCard generation")
@@ -188,15 +185,16 @@ def main():
 	parser.add_argument("files", nargs="+", help="JSON files to process")
 	
 	args = parser.parse_args()
-
-	print(HEADER)
 	
 	for json_file in args.files:
 		try:
 			with open(json_file, "r", encoding="utf-8") as f:
 				json_data = json.load(f)
-				processed_row = json_to_csv(json_data, args.language, args.allow_newlines, args.vcf)
-				print(processed_row)
+
+				writer = csv.writer(sys.stdout)
+				writer.writerow(HEADER)
+				writer.writerow(parse(json_data, args.language, args.allow_newlines, args.vcf))
+				
 		except Exception as e:
 			print(f"Error processing {json_file}: {str(e)}")
 			traceback.print_exc()

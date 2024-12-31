@@ -8,7 +8,7 @@ import random
 import csv
 from collections.abc import MutableMapping
 from zdp_api import ZiviConnectClient, Locale, ApiError
-from pflichtenheft_parser import json_to_csv, HEADER, normalize
+from pflichtenheft_parser import parse, HEADER, normalize
 
 TOKEN_KEY = "ZDP_API_TOKEN"
 MIN_SCRAPE_INTERVAL = 6
@@ -91,10 +91,11 @@ def flatten(dictionary, parent_key='', separator='_'):
             items.append((new_key, value))
     return dict(items)
 
+def remove_trailing_newline(file):
+	file.seek(file.tell()-2)
+	file.truncate()
+
 def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline:bool = True, title:str = None, first:bool = None, last:bool = None):
-	if output_type == OutputType.RAW:
-		if trailing_newline:
-			data = f"{data}\n"
 	if args.scrape == True and args.format == 'json' and output_type != OutputType.RAW:
 		# {search_results: [ ... ], details: { [...] }}
 		output(f"{"{" if output_type == OutputType.SEARCH else ","}\n", args, trailing_newline=False)
@@ -113,29 +114,31 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 	if args.format == 'csv' and output_type == OutputType.DETAILS:
 		if first or first == None:
 			output(HEADER, args, title=title)
-		return output(json_to_csv(data, args.locale.split('-')[0], vcf_dir=f"{args.scrape}/VCards" if args.scrape else None), args, title=title)
+		return output(parse(data, args.locale.split('-')[0], vcf_dir=f"{args.scrape}/VCards" if args.scrape else None), args, title=title)
 
 	if isinstance(args.scrape, str):
 		os.makedirs(args.scrape, exist_ok=True)
 		file_name = f"{args.scrape}/{title}.{args.format}"
 		if args.format == 'csv' and output_type == OutputType.SEARCH:
 			with open(file_name, 'w') as f:
-				if output_type == OutputType.SEARCH:
-					data = [flatten(entry, separator=".") for entry in data]
-					for entry in data:
-						for key in entry.keys():
-							entry[key] = normalize(entry[key], args.allow_newlines)
-					writer = csv.DictWriter(f, fieldnames=data[0].keys())
-					writer.writeheader()
-					writer.writerows(data)
-					return
-				else:
-					f.write(str(data))
-					return
+				data = [flatten(entry, separator=".") for entry in data]
+				for entry in data:
+					for key in entry.keys():
+						entry[key] = normalize(entry[key], args.allow_newlines)
+				writer = csv.DictWriter(f, fieldnames=data[0].keys())
+				writer.writeheader()
+				writer.writerows(data)
+				if not trailing_newline:
+					remove_trailing_newline(f)
+			return
 		
 		if output_type == OutputType.RAW:
 			with open(file_name, 'a+') as f:
-				f.write(str(data))
+				if args.format == 'csv':
+					writer = csv.writer(f)
+					writer.writerow(data)
+				else:
+					f.write(str(data) + ('\n' if trailing_newline else ''))
 			return
 		
 		if args.format == 'json':
@@ -143,7 +146,7 @@ def output(data, args, output_type:OutputType = OutputType.RAW, trailing_newline
 			return output(f"{"[\n" if first else ""}{format_output(data, args.format, first != None)}{"," if last == False else "\n]" if last else ""}", args, title=title)
 		
 	if output_type == OutputType.RAW:
-		sys.stdout.write(data)
+		sys.stdout.write(f"{data}{'\n' if trailing_newline else ''}")
 		return
 	
 	return output(format_output(data, args.format), args, OutputType.RAW, trailing_newline, title, first, last)
